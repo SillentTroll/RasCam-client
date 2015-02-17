@@ -21,7 +21,7 @@ cd app
 ```
 It might take some time to install. When finished, open the browser and go to your Raspberry Pi IP address.
 You should see a screen like this:
-![](https://www.dropbox.com/s/cq791kd9l9m7yvc/first_config.png)
+![](https://raw.githubusercontent.com/SillentTroll/rascam_client/master/images/first_config.png)
 
 It means the installation went well and now your are required to configure your device with:
 
@@ -30,7 +30,7 @@ It means the installation went well and now your are required to configure your 
  - **Camera name** ig going to be the identification of this device
 
 If successful, the device is going to be registered and server will generate a key, that is going to be used for communication with the server.
-![](https://www.dropbox.com/s/9pjid8t54tv8vnx/configured.png)
+![](https://raw.githubusercontent.com/SillentTroll/rascam_client/master/images/configured.png)
 
 And that is pretty much it for the client side.
 
