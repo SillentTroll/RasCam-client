@@ -34,4 +34,9 @@ If successful, the device is going to be registered and server will generate a k
 
 And that is pretty much it for the client side.
 
+##Testing
+You can test the installation process on your dev machine by running the installation in a [Vagrant](https://www.vagrantup.com) box:
+```
+vagrant up
+```
 
