@@ -1,0 +1,9 @@
+Flask >= 0.10.1
+Jinja2
+flask-sqlalchemy
+requests_jwt
+simplejson
+requests
+wtforms
+celery
+uwsgi

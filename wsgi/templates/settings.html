@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}Settings{% endblock %}
+{% block page_header %}Camera settings{% endblock %}
+{% block head %}
+{% endblock %}
+{% block content %}
+
+<table class="table">
+    <tbody>
+    {%for setting in settings%}
+    <tr>
+        <td><h5>{{setting.desc}}</h5></td>
+        <td style="vertical-align: middle;">{{setting.value}}</td>
+    </tr>
+    {%endfor%}
+    </tbody>
+</table>
+
+{% endblock %}
+
+
+{% block actions %}
+<button type="button" class="btn btn-danger btn-block"
+        data-toggle="modal" data-target="#reset_confirm_modal">Reset Camera
+</button>
+
+{% endblock %}
+
+{% block other %}
+<script src="{{ url_for('static', filename='js/cam_actions.js') }}"></script>
+
+<div id="reset_confirm_modal" class="modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="reset_confirm_modal" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <div id="reset_alerts"></div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Type this camera name to confirm</label>
+                    <input type="text" class="form-control"
+                           name="reset_camera_name" id="reset_camera_name">
+                </div>
+                <button class="btn btn-danger btn-block"
+                        onclick="reset_camera();">Reset
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

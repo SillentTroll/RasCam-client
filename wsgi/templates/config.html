@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}First config{% endblock %}
+{% block page_header %}Configure your camera{% endblock %}
+{% block content %}
+
+{% from '_formhelpers.html' import render_field_horisontal %}
+<form class="form" method="post" role="form" action="{{ url_for('first_config') }}">
+    {{render_field_horisontal(form.url)}}
+    {{render_field_horisontal(form.username)}}
+    {{render_field_horisontal(form.password)}}
+    {{render_field_horisontal(form.cam_name)}}
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+{% endblock %}
