@@ -1,5 +1,5 @@
 # RasCam-client
-Client part of RasCam project.
+Client part of [RasCam](https://github.com/SillentTroll/rascam) project.
 
 Does all work of detecting the motion and uploading the image to the main server.
 
