@@ -36,7 +36,7 @@ The configuration parameters are:
 
  - **The server URL** is the url of your server, where all the images are going to be uploaded
  - **Username and password** of the admin user, created on the main server
- - **Camera name** ig going to be the identification of this device
+ - **Camera name** is going to be the unique identification of this device
 
 If successful, the device is going to be registered and server will generate a key, that is going to be used for communication with the server.
 ![](https://raw.githubusercontent.com/SillentTroll/rascam_client/master/images/configured.png)
