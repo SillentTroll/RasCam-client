@@ -12,10 +12,10 @@ def camera_not_configured():
 
 
 def get_cam_config():
-    if constants.Environment.DB_PATH not in os.environ:
-        os.environ[constants.Environment.DB_PATH] = '/tmp/webcam.db'
+    if constants.Environment.SQLLITE_DB_PATH not in os.environ:
+        os.environ[constants.Environment.SQLLITE_DB_PATH] = constants.Environment.DB_PATH
     try:
-        conn = lite.connect(os.environ.get(constants.Environment.DB_PATH))
+        conn = lite.connect(os.environ.get(constants.Environment.SQLLITE_DB_PATH))
         c = conn.cursor()
         c.execute('select * from Config')
         config = {}

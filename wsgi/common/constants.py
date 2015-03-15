@@ -6,7 +6,8 @@ class Config(object):
 
 
 class Environment(object):
-    DB_PATH = "SQLITE_DB_PATH"
+    SQLLITE_DB_PATH = "SQLITE_DB_PATH"
+    DB_PATH = "/var/data/webcam.db"
 
 
 class Backend(object):

@@ -16,10 +16,10 @@ app.config['SECRET_KEY'] = os.urandom(126)
 CONF_SERVER_URL = 'SERVER_URL'
 CONF_IS_CONFIGURED = 'IS_CONFIGURED'
 
-if constants.Environment.DB_PATH not in os.environ:
-    os.environ[constants.Environment.DB_PATH] = '/tmp/webcam.db'
+if constants.Environment.SQLLITE_DB_PATH not in os.environ:
+    os.environ[constants.Environment.SQLLITE_DB_PATH] = constants.Environment.DB_PATH
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.environ.get(constants.Environment.DB_PATH)
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.environ.get(constants.Environment.SQLLITE_DB_PATH)
 
 db = SQLAlchemy(app)
 

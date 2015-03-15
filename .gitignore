@@ -99,6 +99,6 @@ out/
 data
 ansible
 .vagrant
-fig.yml
+docker-compose.yml
 Dockerfile
 
