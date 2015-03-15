@@ -26,12 +26,8 @@ apt-get install rabbitmq-server -y
 echo "RabbitMQ installed"
 #download from url
 
-#copy motion config
-cp $APP_HOME/motion/motion.conf /etc/motion/motion.conf
-chmod 777 /etc/motion/motion.conf
-sed -i "s/=no/=yes/g" /etc/default/motion
-
 mkdir -p /var/log/app
+mkdir -p /var/data/
 
 #configure web server
 rm /etc/nginx/sites-enabled/default
