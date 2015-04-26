@@ -2,12 +2,6 @@ class Config(object):
     SERVER_URL = "BACKEND_SERVER_URL"
     CAMERA_NAME = "CAM_NAME"
     API_KEY = "API_KEY"
-    IP = "IP"
-
-
-class Environment(object):
-    SQLLITE_DB_PATH = "SQLITE_DB_PATH"
-    DB_PATH = "/var/data/webcam.db"
 
 
 class Backend(object):

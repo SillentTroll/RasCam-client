@@ -8,6 +8,11 @@
 
 <table class="table">
     <tbody>
+    <tr>
+        <td colspan="2">
+            <h4><strong>{%if camera_state.active%} Active {%else%} Inactive {%endif%}</strong> since {{camera_state.changed}}</h4>
+        </td>
+    </tr>
     {%for setting in settings%}
     <tr>
         <td><h5>{{setting.desc}}</h5></td>

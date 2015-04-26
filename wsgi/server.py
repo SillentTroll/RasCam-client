@@ -1,27 +1,18 @@
+from datetime import datetime
 from functools import wraps
-import os
 
-from flask import (Flask, url_for, request, render_template, flash, jsonify)
+from flask import (url_for, request, render_template, flash, jsonify)
 from werkzeug.utils import redirect
 from wtforms import Form, TextField, validators, PasswordField
 
-from flask.ext.sqlalchemy import SQLAlchemy
 import back_end_services
 from common import constants
+from factory import create_app
+from extensions import db
+from models import Config, State
 
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(126)
-
-CONF_SERVER_URL = 'SERVER_URL'
-CONF_IS_CONFIGURED = 'IS_CONFIGURED'
-
-if constants.Environment.SQLLITE_DB_PATH not in os.environ:
-    os.environ[constants.Environment.SQLLITE_DB_PATH] = constants.Environment.DB_PATH
-
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.environ.get(constants.Environment.SQLLITE_DB_PATH)
-
-db = SQLAlchemy(app)
+app = create_app()
 
 
 def requires_valid_config(f):
@@ -34,23 +25,9 @@ def requires_valid_config(f):
 
     return decorated_function
 
-
-class Config(db.Model):
-    id = db.Column(db.String(80), unique=True, primary_key=True)
-    value = db.Column(db.String(300))
-    desc = db.Column(db.String(100))
-
-    def __init__(self, id, value, desc):
-        self.id = id
-        self.value = value
-        self.desc = desc
-
-    def __repr__(self):
-        return '<Config %r:%r>' % (self.id, self.value)
-
-
-db.create_all()
-
+@app.before_first_request
+def create_database():
+    db.create_all()
 
 @app.route("/")
 def index():
@@ -107,7 +84,13 @@ def settings():
             "value": config.value,
             "desc": config.desc
         })
-    return render_template("settings.html", settings=configs)
+    state = get_camera_state()
+    return render_template("settings.html",
+                           settings=configs,
+                           camera_state={
+                               "active": state.state,
+                               "changed": str(state.changed)
+                           })
 
 
 @app.route("/reset", methods=['GET'])
@@ -139,6 +122,16 @@ def get_config_from_db(config_id):
         return None
     else:
         return from_db.value
+
+
+def get_camera_state():
+    state = State.query.first()
+    if not state:
+        db.session.add(State(value=False, date=datetime.now()))
+        db.session.commit()
+        return get_camera_state()
+    else:
+        return state
 
 
 if __name__ == '__main__':

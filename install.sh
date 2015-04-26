@@ -40,7 +40,6 @@ sed -i "s#APP_HOME#$APP_HOME#g" $APP_HOME/config/supervisord.conf
 
 cp $APP_HOME/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-service motion restart
 service supervisor restart
 service nginx restart
 

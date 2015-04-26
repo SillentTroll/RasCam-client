@@ -1,55 +1,30 @@
 import os
-
-
-__author__ = 'aguzun'
-
 from urlparse import urljoin
-from datetime import timedelta
 
 import requests
-from celery import Celery
 
 from motion import motion_control
+from datetime import datetime
 from wsgi.common import constants
-import utils
-
-worker = Celery('tasks', broker='amqp://guest@localhost//')
-
-worker.conf.update(
-    CELERYBEAT_SCHEDULE={
-        'add-every-30-seconds': {
-            'task': 'camera_worker.check_state',
-            'schedule': timedelta(seconds=30),
-        },
-    },
-    CELERY_TASK_SERIALIZER='json',
-    CELERY_ACCEPT_CONTENT=['json'],  # Ignore other content
-    CELERY_RESULT_SERIALIZER='json',
-    CELERY_TIMEZONE='Europe/Lisbon',
-    CELERY_ENABLE_UTC=True,
-)
+from wsgi.extensions import celery as worker, db
+from wsgi.server import get_config_from_db, get_camera_state
 
 
 def get_config_data():
-    config = utils.get_cam_config()
-    if config:
-        url = config[constants.Config.SERVER_URL]
-        api_key = config[constants.Config.API_KEY]
-        if not url or not api_key:
-            utils.camera_not_configured()
-            return None, None
-        else:
-            return url, api_key
-    else:
-        utils.camera_not_configured()
+    url = get_config_from_db(constants.Config.SERVER_URL)
+    api_key = get_config_from_db(constants.Config.API_KEY)
+    if not url or not api_key:
+        camera_not_configured()
         return None, None
+    else:
+        return url, api_key
 
 
 @worker.task
 def check_state():
     print "Going to check the state"
     url, api_key = get_config_data()
-
+    camera_state = get_camera_state()
     if url and api_key:
         params = {
             'api_key': api_key,
@@ -57,43 +32,52 @@ def check_state():
         response = requests.get(urljoin(url, constants.Backend.CHECK_STATE), params=params)
         if response.status_code == requests.codes.ok:
             result_json = response.json()
-            result_state = result_json.get("state")
-            print "Got state : %s" % result_state
-            if result_state is not None:
-                if result_state:
-                    motion_control.detection.start()
-                else:
-                    motion_control.detection.pause()
-            if result_json.get("config_changed"):
-                print "server config changed, going to update the config"
-                # TODO update the config
+            if "camera_state" in result_json:
+                new_state = result_json.get("camera_state")
+                if new_state != camera_state.state:
+                    print "Got new state : %s" % new_state
+                    camera_state.state = new_state
+                    camera_state.changed = datetime.now()
+                    db.session.commit()
+                    if new_state:
+                        motion_control.detection.start()
+                    else:
+                        motion_control.detection.pause()
         else:
             print "Server returned %s", response.status_code
 
 
 @worker.task
-def upload(filename, date, event, remove):
+def upload(filename, date, remove):
     url, api_key = get_config_data()
+    camera_state = get_camera_state()
 
-    if url and api_key:
+    if url and api_key and camera_state.state:
+        print "Uploading image %s" % filename
+
         files = {'file': (filename, open(filename, 'rb'))}
         payload = {
             'date': date,
-            'event': event,
             'api_key': api_key
         }
         response = requests.post(urljoin(url, constants.Backend.UPLOAD_URL), files=files, data=payload)
         if response.status_code == requests.codes.ok:
-            if remove and response.json().get('status') == "OK":
+            response_json = response.json()
+            if response_json.get('status') == "OK" and remove:
                 os.remove(filename)
                 print "File %s removed after upload" % filename
+
+            if "camera_state" in response_json and response_json.get("camera_state") is False:
+                print "Camera was deactivated, changing the state in DB"
+                motion_control.detection.pause()
+                camera_state.state = False
+                camera_state.changed = datetime.now()
+                db.session.commit()
         else:
             print "Server returned %s", response.status_code
     else:
         raise upload.retry(countdown=60 * 5)
 
 
-
-
-
-
+def camera_not_configured():
+    print "Please setup your camera first"

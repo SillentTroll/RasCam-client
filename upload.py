@@ -15,7 +15,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.filename:
-        upload.delay(args.filename, args.date, args.event, args.remove)
+        upload.delay(args.filename, args.date, args.remove)
     print "Filename %s done" % args.filename
 
 
