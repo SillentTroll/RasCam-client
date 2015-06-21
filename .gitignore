@@ -101,4 +101,4 @@ ansible
 .vagrant
 docker-compose.yml
 Dockerfile
-
+deploy.sh
