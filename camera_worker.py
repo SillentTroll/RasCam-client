@@ -51,7 +51,7 @@ def upload(filename, date, remove):
     url, api_key = get_config_data()
     camera_state = get_camera_state()
 
-    if url and api_key and camera_state.state:
+    if url and api_key:
         print "Uploading image %s" % filename
 
         files = {'file': (filename, open(filename, 'rb'))}
@@ -73,7 +73,7 @@ def upload(filename, date, remove):
                 camera_state.changed = datetime.now()
                 db.session.commit()
         else:
-            print "Server returned %s", response.status_code
+            print "Server returned %s" % response.status_code
     else:
         raise upload.retry(countdown=60 * 5)
 
