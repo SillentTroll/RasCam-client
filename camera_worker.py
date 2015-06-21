@@ -22,7 +22,6 @@ def get_config_data():
 
 @worker.task
 def check_state():
-    print "Going to check the state"
     url, api_key = get_config_data()
     camera_state = get_camera_state()
     if url and api_key:
@@ -47,7 +46,7 @@ def check_state():
             print "Server returned %s", response.status_code
 
 
-@worker.task
+@worker.task(retry_count=15)
 def upload(filename, date, remove):
     url, api_key = get_config_data()
     camera_state = get_camera_state()
